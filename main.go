@@ -1,26 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	"github.com/luispinto23/go-micro/handlers"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Hello world")
+	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
-		d, err := ioutil.ReadAll(r.Body)
+	hh := handlers.NewHello(l)
+	gh := handlers.NewGoodbye(l)
 
-		if err != nil {
-			http.Error(w, "Something went wrong", http.StatusBadRequest)
-			return
-		}
+	sm := http.NewServeMux()
+	sm.Handle("/", hh)
+	sm.Handle("/goodbye", gh)
 
-		fmt.Fprintf(w, "Hello %s", d)
-
-	})
-
-	http.ListenAndServe(":9090", nil)
+	http.ListenAndServe(":9090", sm)
 }
