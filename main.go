@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/luispinto23/go-micro/handlers"
@@ -14,13 +15,14 @@ import (
 func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
-	hh := handlers.NewHello(l)
-	gh := handlers.NewGoodbye(l)
+	// create handlers
+	ph := handlers.NewProducts(l)
 
+	// create mux and register the handlers
 	sm := http.NewServeMux()
-	sm.Handle("/", hh)
-	sm.Handle("/goodbye", gh)
+	sm.Handle("/", ph)
 
+	// create a new http server
 	s := &http.Server{
 		Addr:         ":9090",
 		Handler:      sm,
@@ -29,6 +31,7 @@ func main() {
 		WriteTimeout: 1 * time.Second,
 	}
 
+	// start the server
 	go func() {
 		l.Println("starting server on port 9090")
 
@@ -38,9 +41,10 @@ func main() {
 		}
 	}()
 
-	sigChan := make(chan os.Signal)
+	// catch sigterm or interrupt to graceful shutdown
+	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt)
-	signal.Notify(sigChan, os.Kill)
+	signal.Notify(sigChan, syscall.SIGTERM)
 
 	sig := <-sigChan
 	l.Println("Received terminate, shuting down", sig)
