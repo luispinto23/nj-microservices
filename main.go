@@ -12,6 +12,8 @@ import (
 	"github.com/luispinto23/go-micro/handlers"
 )
 
+// var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
+
 func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
