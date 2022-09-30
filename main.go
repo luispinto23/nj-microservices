@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/luispinto23/go-micro/handlers"
 	"log"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/luispinto23/go-micro/handlers"
 )
 
 func main() {
@@ -17,5 +19,13 @@ func main() {
 	sm.Handle("/", hh)
 	sm.Handle("/goodbye", gh)
 
-	http.ListenAndServe(":9090", sm)
+	s := &http.Server{
+		Addr:         ":9090",
+		Handler:      sm,
+		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+	}
+
+	s.ListenAndServe()
 }
