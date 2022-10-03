@@ -70,7 +70,7 @@ func getNextID() int {
 }
 
 func UpdateProduct(id int, p *Product) error {
-	p, pos, err := findProduct(id)
+	_, pos, err := findProduct(id)
 
 	if err != nil {
 		return err
