@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/luispinto23/go-micro/handlers"
 )
 
@@ -21,8 +22,10 @@ func main() {
 	ph := handlers.NewProducts(l)
 
 	// create mux and register the handlers
-	sm := http.NewServeMux()
-	sm.Handle("/", ph)
+	sm := mux.NewRouter()
+
+	getRouter := sm.Methods("GET").Subrouter()
+	getRouter.HandleFunc("/", ph.GetProducts)
 
 	// create a new http server
 	s := &http.Server{
